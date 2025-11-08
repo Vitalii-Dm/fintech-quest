@@ -151,7 +151,7 @@ export default function PrismLanding() {
 
             {/* Right: 3D Savings Pot */}
             <motion.div {...fade}>
-              <SavingsPot3D percent={BALANCE / 5000} />
+              <SavingsPot3D balance={BALANCE} goal={5000} />
             </motion.div>
           </div>
         </div>
