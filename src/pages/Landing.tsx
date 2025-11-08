@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
   Upload, ArrowRight, Trophy, Coffee, Footprints, Utensils,
@@ -9,6 +9,7 @@ import {
   PieChart, Pie, Cell
 } from "recharts";
 import { SavingsPot3D } from "@/components/SavingsPot3D";
+import { RewardsModal } from "@/components/RewardsModal";
 
 /**
  * PRISM – Student Finances. Smarter. Rewarded.
@@ -91,6 +92,7 @@ function Card({ children, className = "" }: React.PropsWithChildren<{ className?
 export default function PrismLanding() {
   const heroRef = useRef<HTMLDivElement>(null);
   const xHero = useParallax(heroRef);
+  const [openRewards, setOpenRewards] = useState(false);
 
   const donutData = useMemo(() => spendBreakdown.map((d, i) => ({ ...d, color: COLORS[i % COLORS.length] })), []);
 
@@ -261,7 +263,7 @@ export default function PrismLanding() {
               <div className="h-full bg-gradient-to-r from-emerald-400 to-teal-400" style={{ width: `${Math.min(100, POINTS / (nextTier && nextTier.max!==Infinity ? nextTier.max : POINTS + ptsToNext) * 100)}%` }} />
             </div>
             <div className="mt-3 text-sm text-white/85">{ptsToNext>0? <>You're <span className="text-emerald-400 font-semibold">{ptsToNext} pts</span> from <b>next tier</b>.</> : <>Top tier unlocked.</>}</div>
-            <div className="mt-4"><a className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 font-semibold text-black"><Gift className="size-4"/> Redeem Rewards</a></div>
+            <div className="mt-4"><button onClick={() => setOpenRewards(true)} className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 font-semibold text-black"><Gift className="size-4"/> Redeem Rewards</button></div>
           </Card>
         </div>
       </section>
@@ -286,6 +288,16 @@ export default function PrismLanding() {
           <div className="flex items-center gap-6"><a className="hover:text-white" href="#">Privacy</a><a className="hover:text-white" href="#">Terms</a></div>
         </div>
       </footer>
+
+      <RewardsModal
+        open={openRewards}
+        onClose={() => setOpenRewards(false)}
+        points={POINTS}
+        onRedeem={(r) => {
+          console.log('Redeem', r.id);
+          setOpenRewards(false);
+        }}
+      />
 
       {/* CSS keyframes for shine if needed elsewhere */}
       <style>{`
