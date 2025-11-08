@@ -1,144 +1,150 @@
 'use client';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import {
-  Environment, OrbitControls, ContactShadows,
-  MeshDistortMaterial, Float
-} from '@react-three/drei';
+import { Environment, OrbitControls, ContactShadows, Float, MeshTransmissionMaterial } from '@react-three/drei';
 import { a, useSpring } from '@react-spring/three';
 import * as THREE from 'three';
 
-/**
- * Logic:
- *  • Displays real saving progress: balance / goal = %.
- *  • Liquid level rises smoothly (react-spring interpolation).
- *  • Coins fall in when balance increases.
- *  • Auto-rotate camera + glow base + realistic refraction.
- */
+type Props = { balance: number; goal: number; points?: number };
 
-export function SavingsPot3D({
-  balance = 2850,
-  goal = 5000,
-}: { balance?: number; goal?: number }) {
-  const percent = Math.min(balance / goal, 1);
-  const [coins, setCoins] = useState<number[]>([]);
+function tierFromPoints(pts: number) {
+  if (pts >= 5000) return { name: 'Platinum', nextAt: null };
+  if (pts >= 1500) return { name: 'Gold', nextAt: 5000 };
+  if (pts >= 500)  return { name: 'Silver', nextAt: 1500 };
+  return { name: 'Bronze', nextAt: 500 };
+}
 
-  // Animate level
-  const { y } = useSpring({ y: percent, config: { tension: 180, friction: 22 } });
-
-  // Drop new coin each time balance changes
-  useEffect(() => setCoins((c) => [...c, Date.now()]), [balance]);
-
+function FresnelRim() {
   return (
-    <div className="relative h-[480px] w-full rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-transparent overflow-hidden">
-      <Canvas shadows camera={{ position: [2.3, 1.6, 2.8], fov: 45 }}>
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[3, 4, 5]} intensity={1.3} castShadow />
-        <Environment preset="city" />
-        <Float speed={1.2} rotationIntensity={0.3}>
-          <PotBody fill={y} />
-        </Float>
-        {coins.map((id, i) => (
-          <FallingCoin key={id} delay={i * 0.5} />
-        ))}
-        <ContactShadows position={[0, -0.7, 0]} opacity={0.35} scale={6} blur={3} far={1.2} />
-        <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.6} />
-      </Canvas>
-
-      {/* Overlay HUD */}
-      <div className="absolute bottom-0 inset-x-0 flex justify-between px-5 py-3 bg-gradient-to-t from-black/40 to-transparent">
-        <div className="text-sm text-white/70">Savings Pot</div>
-        <div className="text-right">
-          <div className="text-2xl font-bold text-emerald-400">{Math.round(percent * 100)}%</div>
-          <div className="text-xs text-white/60">£{balance.toLocaleString()} / £{goal.toLocaleString()}</div>
-        </div>
-      </div>
-    </div>
+    <mesh>
+      <cylinderGeometry args={[0.51, 0.51, 1.22, 100, 1, true]} />
+      <shaderMaterial
+        transparent
+        uniforms={{
+          color: { value: new THREE.Color('#a7fff2') },
+          power: { value: 2.0 },
+        }}
+        vertexShader={/* glsl */`
+          varying vec3 vN;
+          varying vec3 vW;
+          void main() {
+            vN = normalize(normalMatrix * normal);
+            vec4 wPos = modelMatrix * vec4(position, 1.0);
+            vW = normalize(wPos.xyz - cameraPosition);
+            gl_Position = projectionMatrix * viewMatrix * wPos;
+          }
+        `}
+        fragmentShader={/* glsl */`
+          uniform vec3 color; uniform float power;
+          varying vec3 vN; varying vec3 vW;
+          void main(){
+            float rim = 1.0 - max(dot(vN, -vW), 0.0);
+            float a = pow(rim, power);
+            gl_FragColor = vec4(color, a * 0.5);
+          }
+        `}
+      />
+    </mesh>
   );
 }
 
-function PotBody({ fill }: { fill: any }) {
-  const group = useRef<THREE.Group>(null);
-  useFrame(() => {
-    if (group.current) group.current.rotation.y += 0.0035;
-  });
-
-  return (
-    <group ref={group}>
-      {/* Glass jar */}
-      <mesh>
-        <cylinderGeometry args={[0.5, 0.5, 1.2, 120]} />
-        <meshPhysicalMaterial
-          transmission={0.97}
-          roughness={0.05}
-          clearcoat={1}
-          thickness={0.6}
-          transparent
-          opacity={0.3}
-          color="#e8fff9"
-        />
-      </mesh>
-
-      {/* Gold lid */}
-      <mesh position={[0, 0.65, 0]}>
-        <torusGeometry args={[0.43, 0.05, 40, 150]} />
-        <meshStandardMaterial color="#ffd700" metalness={1} roughness={0.2} />
-      </mesh>
-
-      {/* Base with neon glow */}
-      <mesh position={[0, -0.65, 0]}>
-        <cylinderGeometry args={[0.52, 0.52, 0.05, 80]} />
-        <meshStandardMaterial color="#0f172a" emissive="#00ffc8" emissiveIntensity={0.3} />
-      </mesh>
-
-      {/* Liquid */}
-      <AnimatedLiquid level={fill} />
-    </group>
-  );
-}
-
-function AnimatedLiquid({ level }: { level: any }) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    if (meshRef.current) {
-      meshRef.current.position.y = level.get() * 0.9 - 0.45;
-      meshRef.current.rotation.z = Math.sin(t * 0.3) * 0.04;
+function Liquid({ level = 0.5 }: { level?: number }) {
+  const ref = useRef<THREE.Mesh>(null);
+  const { y } = useSpring({ y: level, config: { tension: 160, friction: 24 } });
+  useFrame((s) => {
+    const t = s.clock.elapsedTime;
+    if (ref.current) {
+      ref.current.position.y = y.get() * 0.9 - 0.45;
+      ref.current.rotation.z = Math.sin(t * 0.35) * 0.035;
     }
   });
   return (
-    <a.mesh ref={meshRef}>
-      <cylinderGeometry args={[0.42, 0.42, 0.9, 80]} />
-      <MeshDistortMaterial
-        color="#00ffd5"
-        emissive="#00ffe0"
-        emissiveIntensity={0.15}
+    <a.mesh ref={ref}>
+      <cylinderGeometry args={[0.42, 0.42, 0.9, 96]} />
+      <meshPhysicalMaterial
+        color="#16ffe0"
+        roughness={0.08}
+        metalness={0.05}
+        transmission={0.4}
+        thickness={0.2}
         transparent
-        opacity={0.75}
-        metalness={0.1}
-        roughness={0.1}
-        distort={0.15}
-        speed={2}
+        opacity={0.85}
+        clearcoat={1}
       />
     </a.mesh>
   );
 }
 
-function FallingCoin({ delay = 0 }: { delay?: number }) {
-  const ref = useRef<THREE.Mesh>(null);
-  useFrame((state) => {
-    const t = state.clock.elapsedTime - delay;
-    if (t > 0 && ref.current) {
-      const y = 1.6 - t * 1.3;
-      ref.current.position.y = y > -0.3 ? y : -999;
-      ref.current.rotation.x += 0.08;
-      ref.current.rotation.y += 0.1;
-    }
-  });
+function Pot() {
   return (
-    <mesh ref={ref} position={[0, 1.6, 0]} rotation={[Math.PI / 2, 0, 0]}>
-      <cylinderGeometry args={[0.08, 0.08, 0.01, 40]} />
-      <meshStandardMaterial color="#ffd700" metalness={1} roughness={0.2} emissive="#ffdf70" />
-    </mesh>
+    <group>
+      {/* Glass body */}
+      <mesh castShadow>
+        <cylinderGeometry args={[0.5, 0.5, 1.2, 120]} />
+        <MeshTransmissionMaterial
+          ior={1.45}
+          thickness={0.6}
+          roughness={0.08}
+          transmission={1}
+          anisotropy={0.2}
+          chromaticAberration={0.01}
+          clearcoat={1}
+          clearcoatRoughness={0.2}
+          samples={8}
+          resolution={512}
+          color="#e8fff9"
+        />
+      </mesh>
+      {/* Gold lid */}
+      <mesh position={[0, 0.66, 0]}>
+        <torusGeometry args={[0.43, 0.05, 40, 150]} />
+        <meshStandardMaterial color="#d4af37" metalness={1} roughness={0.18} />
+      </mesh>
+      {/* Neon base */}
+      <mesh position={[0, -0.66, 0]}>
+        <cylinderGeometry args={[0.52, 0.52, 0.06, 80]} />
+        <meshStandardMaterial color="#0f172a" />
+      </mesh>
+      {/* Rim glow */}
+      <FresnelRim />
+    </group>
+  );
+}
+
+export function SavingsPot3D({ balance, goal, points = 0 }: Props) {
+  const pct = Math.min(balance / goal, 1);
+  const tier = tierFromPoints(points);
+  const ptsToNext = tier.nextAt ? Math.max(0, tier.nextAt - points) : 0;
+
+  return (
+    <div className="relative w-full h-[500px] rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-transparent overflow-hidden">
+      <Canvas shadows camera={{ position: [2.4, 1.8, 2.8], fov: 45 }}>
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[3, 4, 5]} intensity={1.25} castShadow />
+        <Environment preset="city" />
+        <Float speed={1.2} rotationIntensity={0.25}>
+          <group>
+            <Pot />
+            <Liquid level={pct} />
+          </group>
+        </Float>
+        <ContactShadows position={[0, -0.72, 0]} opacity={0.35} scale={6} blur={3} far={1.2} />
+        <OrbitControls enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={0.55} />
+      </Canvas>
+
+      {/* HUD */}
+      <div className="absolute bottom-0 inset-x-0 px-5 py-4 bg-gradient-to-t from-black/45 to-transparent flex items-center justify-between">
+        <div className="space-y-1">
+          <div className="text-xs text-white/70">Savings Pot</div>
+          <div className="text-sm text-white/60">£{balance.toLocaleString()} / £{goal.toLocaleString()}</div>
+        </div>
+        <div className="text-right">
+          <div className="text-2xl font-bold text-emerald-400">{Math.round(pct * 100)}%</div>
+          <div className="text-xs text-white/70">
+            {tier.name} • {tier.nextAt ? `${ptsToNext} pts to next` : 'Top tier'}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
