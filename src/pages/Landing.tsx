@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Upload, ArrowRight, Trophy, Coffee, Footprints, Utensils, CheckCircle2, Crown, Star, Sparkles, Gift, TrendingUp } from "lucide-react";
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { SavingsPot3D } from "@/components/SavingsPot3D";
@@ -100,6 +100,11 @@ function Card({
 export default function PrismLanding() {
   const [openRewards, setOpenRewards] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Scroll-based animations for hero
+  const { scrollY } = useScroll();
+  const heroX = useTransform(scrollY, [0, 250], [0, 28]);
+  const heroOpacity = useTransform(scrollY, [0, 200], [1, 0.65]);
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
@@ -142,10 +147,17 @@ export default function PrismLanding() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left */}
             <div className="space-y-6">
-              <h1 className="text-5xl md:text-7xl font-extrabold leading-[0.95] tracking-tight">
+              <motion.h1 
+                style={{ 
+                  x: heroX, 
+                  opacity: heroOpacity
+                }}
+                transition={{ type: "spring", stiffness: 120, damping: 22 }}
+                className="text-5xl md:text-7xl font-extrabold leading-[0.95] tracking-tight"
+              >
                 Your Money.
                 <span className="block text-emerald-400">Decoded & Rewarded.</span>
-              </h1>
+              </motion.h1>
               <p className="text-white/70 text-lg max-w-lg">AI that helps you spend better, save faster, and earn real rewards.</p>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -179,8 +191,14 @@ export default function PrismLanding() {
         </Section>
 
         {/* INSIGHTS */}
-        <Section id="insights" headline="Intelligence" subhead="Spending breakdown, trends, and personalized savings tips.">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <Section id="insights" headline="Intelligence" subhead="Spending breakdown, trends, and personalized savings tips.">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Donut breakdown */}
             <Card className="p-6">
               <div className="text-sm text-white/70 mb-4">Spending breakdown</div>
@@ -228,10 +246,18 @@ export default function PrismLanding() {
               </div>
             </Card>
           </div>
-        </Section>
+          </Section>
+        </motion.div>
 
         {/* HOUSR REWARDS */}
-        <Section id="housr" headline="Housr Rewards" subhead="Earn points every month from rent and bills paid on time.">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+          className="will-change-transform transform-gpu"
+        >
+          <Section id="housr" headline="Housr Rewards" subhead="Earn points every month from rent and bills paid on time.">
           <HousrRewards
             monthLabel="November 2025"
             rentPaid={1000}
@@ -247,21 +273,54 @@ export default function PrismLanding() {
               streakBonusPerMonth: 100,
             }}
           />
-        </Section>
+          </Section>
+        </motion.div>
 
         {/* AI FINANCIAL ADVISOR */}
-        <FinancialAdvisorAI />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+          className="will-change-transform transform-gpu"
+        >
+          <FinancialAdvisorAI />
+        </motion.div>
 
         {/* CHALLENGES */}
-        <SmartChallengesPro challenges={CHALLENGES} />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+          className="will-change-transform transform-gpu"
+        >
+          <SmartChallengesPro challenges={CHALLENGES} />
+        </motion.div>
 
         {/* REWARDS */}
-        <RewardsPro points={POINTS} onOpenRewards={() => setOpenRewards(true)} />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.25 }}
+          className="will-change-transform transform-gpu"
+        >
+          <RewardsPro points={POINTS} onOpenRewards={() => setOpenRewards(true)} />
+        </motion.div>
 
         {/* TRANSACTIONS */}
-        <Section id="transactions" headline="Transaction History" subhead="Track every payment and purchase with detailed insights.">
-          <TransactionsSection />
-        </Section>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
+          className="will-change-transform transform-gpu"
+        >
+          <Section id="transactions" headline="Transaction History" subhead="Track every payment and purchase with detailed insights.">
+            <TransactionsSection />
+          </Section>
+        </motion.div>
 
         <footer className="border-t border-white/10">
           <div className="mx-auto max-w-[1200px] px-6 py-8 text-sm text-white/60 flex items-center justify-between">
