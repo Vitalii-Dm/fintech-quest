@@ -1,7 +1,7 @@
 'use client';
 import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, ContactShadows, Float, MeshTransmissionMaterial } from '@react-three/drei';
+import { Environment, OrbitControls, ContactShadows, Float, MeshTransmissionMaterial } from '@react-three/drei';
 import { a, useSpring } from '@react-spring/three';
 import * as THREE from 'three';
 
@@ -119,9 +119,9 @@ export function SavingsPot3D({ balance, goal, points = 0 }: Props) {
   return (
     <div className="relative w-full h-[500px] rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-transparent overflow-hidden">
       <Canvas shadows camera={{ position: [2.4, 1.8, 2.8], fov: 45 }}>
-        <ambientLight intensity={0.8} />
-        <directionalLight position={[3, 4, 5]} intensity={1.5} castShadow />
-        <pointLight position={[-2, 2, -2]} intensity={0.6} color="#10b981" />
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[3, 4, 5]} intensity={1.25} castShadow />
+        <Environment preset="city" />
         <Float speed={1.2} rotationIntensity={0.25}>
           <group>
             <Pot />
