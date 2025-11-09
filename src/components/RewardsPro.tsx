@@ -31,8 +31,8 @@ const TIERS: Tier[] = [
     min: 100,
     max: 499,
     icon: <Trophy className="h-5 w-5" />,
-    gradient: 'bg-[linear-gradient(135deg,#8B4513_0%,#CD7F32_35%,#D2691E_65%,#B8860B_100%)]',
-    glow: 'shadow-[0_0_32px_rgba(205,127,50,0.4),0_0_0_1px_rgba(205,127,50,0.25)]',
+    gradient: 'bg-[linear-gradient(135deg,#8E562E_0%,#C77A3B_45%,#9C572C_100%)]',
+    glow: 'shadow-[0_0_40px_rgba(199,122,59,0.25),inset_0_0_12px_rgba(0,0,0,0.25)]',
     perks: [
       { icon: <Ticket className="h-4 w-4" />, label: 'Student discounts' },
       { icon: <Gift className="h-4 w-4" />, label: 'Cashback vouchers' },
@@ -44,8 +44,8 @@ const TIERS: Tier[] = [
     min: 500,
     max: 1499,
     icon: <Star className="h-5 w-5" />,
-    gradient: 'bg-[linear-gradient(135deg,#C0C0C0_0%,#E8E8E8_40%,#D3D3D3_60%,#B0C4DE_100%)]',
-    glow: 'shadow-[0_0_32px_rgba(192,192,192,0.35),0_0_0_1px_rgba(224,224,224,0.3)]',
+    gradient: 'bg-[linear-gradient(135deg,#D7DDE8_0%,#A6B1C8_40%,#EEF1F5_100%)]',
+    glow: 'shadow-[0_0_35px_rgba(214,220,230,0.20),inset_0_0_12px_rgba(0,0,0,0.25)]',
     perks: [
       { icon: <Ticket className="h-4 w-4" />, label: 'Cinema passes' },
       { icon: <Utensils className="h-4 w-4" />, label: 'Restaurant deals' },
@@ -57,8 +57,8 @@ const TIERS: Tier[] = [
     min: 1500,
     max: 4999,
     icon: <Crown className="h-5 w-5" />,
-    gradient: 'bg-[linear-gradient(135deg,#FFD700_0%,#FFC700_30%,#FFE55C_50%,#FFB700_80%,#FFA500_100%)]',
-    glow: 'shadow-[0_0_40px_rgba(255,215,0,0.5),0_0_0_1px_rgba(255,215,0,0.35)]',
+    gradient: 'bg-[linear-gradient(135deg,#F5D36C_0%,#E7B93F_40%,#C79A1B_100%)]',
+    glow: 'shadow-[0_0_45px_rgba(245,211,108,0.30),inset_0_0_12px_rgba(0,0,0,0.25)]',
     perks: [
       { icon: <Gift className="h-4 w-4" />, label: 'Luxury experiences' },
       { icon: <Ticket className="h-4 w-4" />, label: 'Weekend getaways' },
@@ -69,8 +69,8 @@ const TIERS: Tier[] = [
     name: 'Platinum',
     min: 5000,
     icon: <Gem className="h-5 w-5" />,
-    gradient: 'bg-[linear-gradient(135deg,#E6E6FA_0%,#B8C5F2_25%,#ADD8E6_50%,#D8BFD8_75%,#E6E6FA_100%)]',
-    glow: 'shadow-[0_0_40px_rgba(173,216,230,0.45),0_0_0_1px_rgba(230,230,250,0.4)]',
+    gradient: 'bg-[linear-gradient(135deg,#C7D2FE_0%,#E0C3FC_40%,#FCE1E4_100%)]',
+    glow: 'shadow-[0_0_42px_rgba(199,210,254,0.25),inset_0_0_12px_rgba(0,0,0,0.25)]',
     perks: [
       { icon: <Dumbbell className="h-4 w-4" />, label: 'Premium gyms' },
       { icon: <Gift className="h-4 w-4" />, label: 'Designer rentals' },
@@ -149,65 +149,73 @@ export default function RewardsPro({ points, onOpenRewards }: RewardsProProps) {
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ delay: idx * 0.12, type: 'spring', stiffness: 110 }}
                 whileHover={{ 
-                  y: -6, 
+                  y: -6,
+                  scale: 1.02,
                   filter: 'blur(0px)',
                   transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } 
                 }}
                 className={[
-                  'group relative overflow-hidden rounded-3xl border-[0.5px] p-5 md:p-6 backdrop-blur-xl premium-shine concave-surface transform-gpu',
-                  'border-white/20 text-white',
-                  'shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15)]',
+                  'group relative overflow-hidden rounded-3xl p-5 md:p-6 premium-shine transform-gpu',
+                  tier.id === 'silver' ? 'text-[#1A1A1A]' : 'text-white',
                   tier.gradient,
-                  isActive ? tier.glow : 'shadow-[0_0_0_0.5px_rgba(255,255,255,0.12)]',
+                  tier.glow,
                 ].join(' ')}
                 style={{
-                  willChange: 'transform, filter',
+                  willChange: 'transform, filter, scale',
+                  border: '1px solid rgba(255,255,255,0.18)',
                 }}
               >
                 {/* Metallic micro-texture noise */}
                 <div 
-                  className="pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-overlay"
+                  className="pointer-events-none absolute inset-0 opacity-[0.035] mix-blend-overlay"
                   style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
                   }}
                 />
                 
                 {/* Top reflective edge highlight */}
-                <div className="pointer-events-none absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="pointer-events-none absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
                 
-                {/* Diagonal metallic sheen animation */}
+                {/* Reflective sheen sweep on hover */}
                 <motion.div 
-                  className="pointer-events-none absolute -inset-1 opacity-0 group-hover:opacity-25 transition-opacity duration-700"
+                  className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
                   style={{
-                    background: 'linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.15) 45%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 55%, transparent 100%)',
-                    backgroundSize: '200% 200%',
+                    background: 'linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.2) 48%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.2) 52%, transparent 100%)',
+                    backgroundSize: '200% 100%',
                   }}
                   animate={{
-                    backgroundPosition: ['0% 0%', '100% 100%'],
+                    backgroundPosition: ['0% 0%', '200% 0%'],
                   }}
                   transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: 'linear',
+                    duration: 1.2,
+                    ease: 'easeInOut',
                   }}
                 />
                 
-                {/* Radial glow spotlight */}
-                <div className="pointer-events-none absolute -top-1 -left-1 h-56 w-56 rotate-[20deg] bg-[radial-gradient(circle,rgba(255,255,255,0.25),transparent_65%)] opacity-15" />
-                <div className="flex items-start justify-between gap-4">
+                {/* Ambient tier-colored glow */}
+                <div 
+                  className="pointer-events-none absolute -inset-[2px] rounded-3xl opacity-[0.10] group-hover:opacity-[0.18] transition-opacity duration-500 blur-xl"
+                  style={{
+                    background: tier.id === 'bronze' ? 'rgba(199,122,59,0.4)' :
+                               tier.id === 'silver' ? 'rgba(214,220,230,0.35)' :
+                               tier.id === 'gold' ? 'rgba(245,211,108,0.45)' :
+                               'rgba(199,210,254,0.4)',
+                  }}
+                />
+                <div className="relative z-10 flex items-start justify-between gap-4">
                   <div className="flex items-center gap-2">
-                    <div className="rounded-xl bg-black/25 backdrop-blur-md p-2">
+                    <div className={`rounded-xl backdrop-blur-md p-2 ${tier.id === 'silver' ? 'bg-black/15' : 'bg-black/25'}`}>
                       {tier.icon}
                     </div>
                     <h3 className="text-xl font-semibold">{tier.name}</h3>
                   </div>
-                  <span className="rounded-full bg-black/30 px-2 py-1 text-xs">{range}</span>
+                  <span className={`rounded-full px-2 py-1 text-xs ${tier.id === 'silver' ? 'bg-black/15' : 'bg-black/30'}`}>{range}</span>
                 </div>
 
                 {/* perks strip */}
-                <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+                <div className="relative z-10 mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
                   {tier.perks.map((p, i) => (
-                    <div key={i} className="inline-flex items-center gap-1.5 text-white/90">
+                    <div key={i} className={`inline-flex items-center gap-1.5 ${tier.id === 'silver' ? 'text-[#1A1A1A]/80' : 'text-white/90'}`}>
                       {p.icon}
                       <span>{p.label}</span>
                     </div>
