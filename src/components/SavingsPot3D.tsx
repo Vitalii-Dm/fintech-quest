@@ -117,31 +117,36 @@ export function SavingsPot3D({ balance, goal, points = 0 }: Props) {
   const ptsToNext = tier.nextAt ? Math.max(0, tier.nextAt - points) : 0;
 
   return (
-    <div className="relative w-full h-[500px] rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-transparent overflow-hidden">
-      <Canvas shadows camera={{ position: [2.4, 1.8, 2.8], fov: 45 }}>
-        <ambientLight intensity={0.8} />
-        <directionalLight position={[3, 4, 5]} intensity={1.5} castShadow />
-        <pointLight position={[-2, 2, -2]} intensity={0.6} color="#10b981" />
-        <Float speed={1.2} rotationIntensity={0.25}>
-          <group>
-            <Pot />
-            <Liquid level={pct} />
-          </group>
-        </Float>
-        <ContactShadows position={[0, -0.72, 0]} opacity={0.35} scale={6} blur={3} far={1.2} />
-        <OrbitControls enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={0.55} />
-      </Canvas>
+    <div className="relative hover:scale-[1.02] transition-transform duration-500 ease-out">
+      <div className="absolute inset-0 bg-gradient-radial from-emerald-400/10 via-transparent to-transparent blur-3xl pointer-events-none" />
+      <div className="relative w-full h-[500px] rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-transparent overflow-hidden">
+        <Canvas shadows camera={{ position: [2.4, 1.6, 2.4], fov: 45 }}>
+          <color attach="background" args={['#0e1114']} />
+          <ambientLight intensity={0.6} />
+          <directionalLight position={[2, 3, 2]} intensity={1.2} color="#fff8e7" castShadow />
+          <spotLight position={[0, 5, 2]} intensity={2.0} angle={0.4} color="#00ffb0" penumbra={0.8} />
+          <pointLight position={[-3, 2, -2]} intensity={0.8} color="#80ffe5" />
+          <Float speed={1.2} rotationIntensity={0.25}>
+            <group>
+              <Pot />
+              <Liquid level={pct} />
+            </group>
+          </Float>
+          <ContactShadows position={[0, -0.7, 0]} opacity={0.35} scale={6} blur={3} />
+          <OrbitControls enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={0.45} />
+        </Canvas>
 
-      {/* HUD */}
-      <div className="absolute bottom-0 inset-x-0 px-5 py-4 bg-gradient-to-t from-black/45 to-transparent flex items-center justify-between">
-        <div className="space-y-1">
-          <div className="text-xs text-white/70">Savings Pot</div>
-          <div className="text-sm text-white/60">£{balance.toLocaleString()} / £{goal.toLocaleString()}</div>
-        </div>
-        <div className="text-right">
-          <div className="text-2xl font-bold text-emerald-400">{Math.round(pct * 100)}%</div>
-          <div className="text-xs text-white/70">
-            {tier.name} • {tier.nextAt ? `${ptsToNext} pts to next` : 'Top tier'}
+        {/* HUD */}
+        <div className="absolute bottom-0 inset-x-0 px-5 py-4 bg-gradient-to-t from-black/45 to-transparent flex items-center justify-between">
+          <div className="space-y-1">
+            <div className="text-xs text-white/70">Savings Pot</div>
+            <div className="text-sm text-white/60">£{balance.toLocaleString()} / £{goal.toLocaleString()}</div>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-emerald-400">{Math.round(pct * 100)}%</div>
+            <div className="text-xs text-white/70">
+              {tier.name} • {tier.nextAt ? `${ptsToNext} pts to next` : 'Top tier'}
+            </div>
           </div>
         </div>
       </div>

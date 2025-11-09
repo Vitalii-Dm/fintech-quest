@@ -23,42 +23,47 @@ const TIERS: Record<TierKey, {
   icon: any;
   perks: string[];
   pitch: string;
+  glow: string;
 }> = {
   bronze: {
     name: 'Bronze',
     range: '100–499 pts',
-    grad: 'from-amber-700 via-amber-600 to-amber-500',
-    ring: 'ring-amber-400/40',
+    grad: 'from-[#c57c3f]/40 to-[#c57c3f]/10',
+    ring: 'ring-[#c57c3f]/40',
     icon: Gift,
     perks: ['Student discounts', 'Cashback vouchers'],
     pitch: 'Start earning easy perks on everyday spends.',
+    glow: '#c57c3f',
   },
   silver: {
     name: 'Silver',
     range: '500–1,499 pts',
-    grad: 'from-zinc-300 via-zinc-200 to-zinc-100',
-    ring: 'ring-zinc-300/40',
+    grad: 'from-[#dfe5f2]/40 to-[#dfe5f2]/10',
+    ring: 'ring-[#dfe5f2]/40',
     icon: Star,
     perks: ['Restaurant deals', 'Cinema passes'],
     pitch: 'Upsize your perks with better dining & entertainment.',
+    glow: '#dfe5f2',
   },
   gold: {
     name: 'Gold',
     range: '1,500–4,999 pts',
-    grad: 'from-yellow-400 via-amber-300 to-yellow-200',
-    ring: 'ring-yellow-300/40',
+    grad: 'from-[#ffd86b]/40 to-[#ffd86b]/10',
+    ring: 'ring-[#ffd86b]/40',
     icon: Crown,
     perks: ['Luxury experiences', 'Weekend getaways'],
     pitch: 'Unlock aspirational rewards and premium experiences.',
+    glow: '#ffd86b',
   },
   platinum: {
     name: 'Platinum',
     range: '5,000+ pts',
-    grad: 'from-indigo-200 via-sky-200 to-fuchsia-200',
-    ring: 'ring-sky-200/40',
+    grad: 'from-[#9fd3ff]/40 to-[#b78aff]/10',
+    ring: 'ring-[#b78aff]/40',
     icon: Sparkles,
     perks: ['Premium gyms', 'Designer rentals'],
     pitch: 'Top-tier access. The best perks we offer.',
+    glow: '#b78aff',
   },
 };
 
@@ -177,9 +182,14 @@ function TierBanner({ currentTier, points }: { currentTier: TierKey; points: num
   const CurIcon = info.icon;
 
   return (
-    <div className={`relative overflow-hidden rounded-3xl border border-white/10 p-5 ring-1 ${info.ring}`}>
-      <div className={`absolute inset-0 opacity-70 bg-gradient-to-br ${info.grad}`} style={{ mixBlendMode: 'soft-light' }} />
-      <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <motion.div
+      whileHover={{ scale: 1.03 }}
+      animate={{ boxShadow: `0 0 25px ${info.glow}` }}
+      transition={{ type: 'spring', stiffness: 100 }}
+      className={`relative overflow-hidden rounded-3xl border border-white/10 p-5 ring-1 ${info.ring} bg-gradient-to-br ${info.grad} backdrop-blur-lg`}
+    >
+      <div className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
+      <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <CurIcon className="h-5 w-5" />
           <div className="text-xl font-semibold">{info.name}</div>
@@ -187,14 +197,14 @@ function TierBanner({ currentTier, points }: { currentTier: TierKey; points: num
         </div>
         <div className="text-white/80">{info.pitch}</div>
       </div>
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
+      <div className="relative z-10 mt-4 grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
         {info.perks.map((p, i) => (
           <div key={i} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">{p}</div>
         ))}
       </div>
 
       {next && (
-        <div className="mt-5 rounded-2xl border border-white/10 bg-black/40 p-4">
+        <div className="relative z-10 mt-5 rounded-2xl border border-white/10 bg-black/40 p-4">
           <div className="flex items-center gap-2 text-sm text-white/80">
             <NextIcon className="h-4 w-4" />
             <span>You're <span className="text-emerald-400 font-semibold">{ptsToNext} pts</span> from <b className="capitalize">{next}</b> — bigger perks await.</span>
@@ -212,7 +222,7 @@ function TierBanner({ currentTier, points }: { currentTier: TierKey; points: num
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }
 

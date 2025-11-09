@@ -11,18 +11,23 @@ type Props = PropsWithChildren<{
 
 export default function Section({ id, headline, subhead, dark, children }: Props) {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['-10% 80%', '60% 20%'] });
-  const y = useTransform(scrollYProgress, [0, 1], [20, 0]);
-  const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['-20%', '70%'] });
+  const brightness = useTransform(scrollYProgress, [0, 1], [0.2, 1]);
+  const glow = useTransform(scrollYProgress, [0, 1], [0, 0.5]);
 
   return (
-    <section id={id} ref={ref} className="relative">
+    <motion.section
+      id={id}
+      ref={ref}
+      style={{
+        filter: useTransform(brightness, (v) => `brightness(${v})`),
+        boxShadow: useTransform(glow, (v) => `0 0 ${v * 50}px rgba(0,255,176,${v})`),
+      }}
+      className="relative transition-all duration-700 ease-in-out py-20 px-6 rounded-[32px] mb-10 bg-gradient-to-b from-[#101416]/90 to-[#0b0e10]/80 backdrop-blur-lg"
+    >
       {/* seam between sections */}
-      <div className="pointer-events-none absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-      <motion.div
-        style={{ y, opacity }}
-        className={`mx-auto max-w-6xl px-5 py-14 md:py-24 ${dark ? '' : ''}`}
-      >
+      <div className="pointer-events-none absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent" />
+      <motion.div className="mx-auto max-w-6xl">
         {headline && (
           <div className="mb-8">
             <h2 className="text-3xl md:text-5xl font-semibold tracking-tight">{headline}</h2>
@@ -31,6 +36,6 @@ export default function Section({ id, headline, subhead, dark, children }: Props
         )}
         {children}
       </motion.div>
-    </section>
+    </motion.section>
   );
 }
