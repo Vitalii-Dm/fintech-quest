@@ -114,7 +114,7 @@ export default function PrismLanding() {
     color: COLORS[i % COLORS.length]
   })), []);
   return <SmoothScroll>
-      <div className="min-h-screen bg-[#0b1210] text-white selection:bg-emerald-500/30">
+      <div className="min-h-screen bg-gradient-to-b from-background via-surface-card to-background text-white selection:bg-emerald-500/30">
         {/* NAV */}
         <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-black/30">
           <div className="mx-auto max-w-[1200px] px-6 py-4 flex items-center justify-between">

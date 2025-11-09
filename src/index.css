@@ -111,7 +111,7 @@ All colors MUST be HSL.
   /* Glass effect */
   .glass {
     backdrop-filter: blur(12px);
-    background: rgba(26, 26, 26, 0.7);
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
   
@@ -134,7 +134,7 @@ All colors MUST be HSL.
   
   /* Glassmorphism */
   .glass-card {
-    background: rgba(26, 26, 26, 0.6);
+    background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
