@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import Upload from "./pages/Upload";
 import Dashboard from "./pages/Dashboard";
+import Transactions from "./pages/Transactions";
 import Challenges from "./pages/Challenges";
 import Rewards from "./pages/Rewards";
 import Savings from "./pages/Savings";
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/landing" element={<Landing />} />
           <Route path="/upload" element={<Upload />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/transactions" element={<Transactions />} />
           <Route path="/challenges" element={<Challenges />} />
           <Route path="/rewards" element={<Rewards />} />
           <Route path="/savings" element={<Savings />} />

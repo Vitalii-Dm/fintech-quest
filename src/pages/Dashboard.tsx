@@ -51,6 +51,7 @@ const Dashboard = () => {
           </div>
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/dashboard" className="text-sm font-medium text-foreground">Dashboard</Link>
+            <Link to="/transactions" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Transactions</Link>
             <Link to="/challenges" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Challenges</Link>
             <Link to="/rewards" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Rewards</Link>
             <Link to="/savings" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Savings</Link>
@@ -120,7 +121,9 @@ const Dashboard = () => {
             <div className="bg-card rounded-2xl p-6 border border-border">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold">Recent Transactions</h2>
-                <Button variant="ghost" size="sm">View All</Button>
+                <Link to="/transactions">
+                  <Button variant="ghost" size="sm">View All</Button>
+                </Link>
               </div>
               
               <div className="space-y-3">
