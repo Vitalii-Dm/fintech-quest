@@ -7,6 +7,7 @@ import { RewardsModal } from "@/components/RewardsModal";
 import Section from "@/components/Section";
 import TierProgress from "@/components/TierProgress";
 import SmoothScroll from "@/components/SmoothScroll";
+import HousrRewards from "@/components/HousrRewards";
 
 /**
  * PRISM – Student Finances. Smarter. Rewarded.
@@ -222,6 +223,25 @@ export default function PrismLanding() {
               </div>
             </Card>
           </div>
+        </Section>
+
+        {/* HOUSR REWARDS */}
+        <Section id="housr" headline="Housr Rewards" subhead="Earn points every month from rent and bills paid on time.">
+          <HousrRewards
+            monthLabel="November 2025"
+            rentPaid={1000}
+            billsPaid={50}
+            paidOnTime={true}
+            streakMonths={3}
+            points={POINTS}
+            onRedeem={() => setOpenRewards(true)}
+            config={{
+              rentRate: 1,
+              billsRate: 0.5,
+              onTimeBonus: 150,
+              streakBonusPerMonth: 100,
+            }}
+          />
         </Section>
 
         {/* CHALLENGES */}
