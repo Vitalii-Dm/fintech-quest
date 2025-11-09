@@ -8,6 +8,7 @@ import Section from "@/components/Section";
 import TierProgress from "@/components/TierProgress";
 import SmoothScroll from "@/components/SmoothScroll";
 import HousrRewards from "@/components/HousrRewards";
+import FinancialAdvisorAI from "@/components/FinancialAdvisorAI";
 
 /**
  * PRISM – Student Finances. Smarter. Rewarded.
@@ -243,6 +244,9 @@ export default function PrismLanding() {
             }}
           />
         </Section>
+
+        {/* AI FINANCIAL ADVISOR */}
+        <FinancialAdvisorAI />
 
         {/* CHALLENGES */}
         <Section id="challenges" headline="Smart Challenges" subhead="Micro-habits that compound into savings.">
