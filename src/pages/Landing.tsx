@@ -250,11 +250,6 @@ export default function PrismLanding() {
         {/* AI FINANCIAL ADVISOR */}
         <FinancialAdvisorAI />
 
-        {/* TRANSACTIONS */}
-        <Section id="transactions" headline="Recent Transactions" subhead="Track every payment and purchase with detailed insights.">
-          <TransactionsSection />
-        </Section>
-
         {/* CHALLENGES */}
         <Section id="challenges" headline="Smart Challenges" subhead="Micro-habits that compound into savings.">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -340,6 +335,11 @@ export default function PrismLanding() {
               </button>
             </div>
           </Card>
+        </Section>
+
+        {/* TRANSACTIONS */}
+        <Section id="transactions" headline="Transaction History" subhead="Track every payment and purchase with detailed insights.">
+          <TransactionsSection />
         </Section>
 
         <footer className="border-t border-white/10">
