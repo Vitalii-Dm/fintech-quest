@@ -152,17 +152,12 @@ export default function HousrRewards({
           </div>
 
           {/* CTA row */}
-          <div className="mt-6 flex gap-3">
-            <button
-              onClick={onRedeem}
-              className="rounded-2xl bg-emerald-500 px-5 py-3 font-semibold text-black shadow-[0_10px_30px_#10b98155]"
-            >
-              Redeem Rewards
-            </button>
-            <button className="rounded-2xl border border-white/15 bg-white/5 px-5 py-3">
-              See Housr partners
-            </button>
-          </div>
+          <button
+            onClick={onRedeem}
+            className="mt-6 rounded-2xl bg-emerald-500 px-5 py-3 font-semibold text-black shadow-[0_10px_30px_#10b98155]"
+          >
+            Redeem Rewards
+          </button>
         </div>
 
         {/* Right: breakdown cards */}
