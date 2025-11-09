@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Upload, ArrowRight, Trophy, CheckCircle2, Crown, Star, Sparkles, Gift, TrendingUp, Receipt, Droplet, Zap } from "lucide-react";
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -13,6 +13,7 @@ import TransactionsSection from "@/components/TransactionsSection";
 import SmartChallengesPro from "@/components/SmartChallengesPro";
 import RewardsPro from "@/components/RewardsPro";
 import PremiumSection from "@/components/PremiumSection";
+import { RewardsPanel, useRewardsStore } from "@/rewards/RewardsEngine";
 
 /**
  * PRISM – Student Finances. Smarter. Rewarded.
@@ -101,6 +102,10 @@ function Card({
 export default function PrismLanding() {
   const [openRewards, setOpenRewards] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Sync points from RewardsEngine store
+  const setPoints = useRewardsStore(s => s.setPoints);
+  useEffect(() => { setPoints(POINTS); }, [setPoints]);
   
   // Scroll-based animations for hero
   const { scrollY } = useScroll();
@@ -282,7 +287,9 @@ export default function PrismLanding() {
 
         {/* REWARDS */}
         <PremiumSection theme="luxury">
-          <RewardsPro points={POINTS} onOpenRewards={() => setOpenRewards(true)} />
+          <Section id="rewards" headline="Redeem Rewards" subhead="Unlock exclusive perks with your points — swipe to claim with QR codes.">
+            <RewardsPanel />
+          </Section>
         </PremiumSection>
 
         {/* TRANSACTIONS */}
