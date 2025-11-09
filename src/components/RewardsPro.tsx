@@ -1,17 +1,12 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { Crown, Star, Gem, Trophy, Gift, Ticket, Dumbbell, Utensils } from 'lucide-react';
 
-/** 
- * Props:
- *  - points: current user points (e.g., 1250)
- *  - onRedeem?: (rewardId: string) => void
- */
 type RewardsProProps = {
   points: number;
-  onRedeem?: (rewardId: string) => void;
+  onOpenRewards: () => void;
 };
 
 type TierId = 'bronze' | 'silver' | 'gold' | 'platinum';
@@ -83,24 +78,6 @@ const TIERS: Tier[] = [
   },
 ];
 
-type Reward = {
-  id: string;
-  title: string;
-  cost: number;
-  tier: TierId;
-  art: string; // emoji or small art marker
-  blurb: string;
-};
-
-const CATALOG: Reward[] = [
-  { id: 'cinema-2', title: '2× Cinema Tickets', cost: 600, tier: 'silver', art: '🎬', blurb: 'Grab a friend and enjoy the latest release.' },
-  { id: 'spotify-1', title: '1 mo Spotify Premium', cost: 750, tier: 'silver', art: '🎧', blurb: 'Music on us for a month.' },
-  { id: 'gym-pass', title: 'Premium Gym Day Pass', cost: 1600, tier: 'gold', art: '🏋️', blurb: 'Train, swim, sauna — the full package.' },
-  { id: 'restaurant-50', title: '£50 Restaurant Voucher', cost: 2000, tier: 'gold', art: '🍽️', blurb: 'Treat yourself to a proper dinner.' },
-  { id: 'weekend-lite', title: 'Weekend Getaway Lite', cost: 4800, tier: 'gold', art: '🏞️', blurb: 'Escape for two days — you earned it.' },
-  { id: 'designer-rent', title: 'Designer Outfit Rental', cost: 5200, tier: 'platinum', art: '🧥', blurb: 'Look sharp for your big event.' },
-];
-
 function getCurrentTier(points: number): Tier {
   // Find highest tier eligible
   const eligible = TIERS.filter(t => points >= t.min).sort((a, b) => (b.min - a.min));
@@ -115,18 +92,10 @@ function getNextTier(points: number): Tier | null {
   return null;
 }
 
-export default function RewardsPro({ points, onRedeem }: RewardsProProps) {
-  const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<Reward | null>(null);
-
+export default function RewardsPro({ points, onOpenRewards }: RewardsProProps) {
   const currentTier = useMemo(() => getCurrentTier(points), [points]);
   const nextTier = useMemo(() => getNextTier(points), [points]);
   const toNext = nextTier ? Math.max(0, nextTier.min - points) : 0;
-
-  const redeemables = useMemo(
-    () => CATALOG.filter(r => r.cost <= points),
-    [points]
-  );
 
   return (
     <section
@@ -156,7 +125,7 @@ export default function RewardsPro({ points, onRedeem }: RewardsProProps) {
           </div>
 
           <button
-            onClick={() => setOpen(true)}
+            onClick={onOpenRewards}
             className="group inline-flex items-center gap-2 rounded-2xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-2 text-emerald-300 hover:bg-emerald-500/15 hover:text-emerald-200 transition-colors"
           >
             <Gift className="h-4 w-4" />
@@ -258,122 +227,6 @@ export default function RewardsPro({ points, onRedeem }: RewardsProProps) {
           </div>
         </div>
 
-        {/* Redeem modal */}
-        <AnimatePresence>
-          {open && (
-            <motion.div
-              className="fixed inset-0 z-[80] flex items-end md:items-center justify-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              {/* Backdrop */}
-              <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
-              {/* Panel */}
-              <motion.div
-                initial={{ y: 40, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 20, opacity: 0 }}
-                transition={{ type: 'spring', stiffness: 110 }}
-                className="relative z-[90] w-[92vw] max-w-3xl overflow-hidden rounded-3xl border border-white/15 bg-[linear-gradient(180deg,#0d1115,#0a0e12)] p-6 md:p-7"
-              >
-                <div className="mb-4 flex items-center justify-between gap-4">
-                  <div>
-                    <h3 className="text-xl font-semibold text-white">Redeem Rewards</h3>
-                    <p className="text-sm text-white/70">
-                      Choose a perk and claim it using your points.
-                    </p>
-                  </div>
-                  <span className="rounded-lg bg-emerald-500/15 px-3 py-1 text-emerald-300 text-sm">
-                    {points.toLocaleString()} pts
-                  </span>
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  {CATALOG.map((r, i) => {
-                    const affordable = r.cost <= points;
-                    return (
-                      <motion.button
-                        key={r.id}
-                        type="button"
-                        onClick={() => setSelected(r)}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.06 }}
-                        className={[
-                          'group flex items-center justify-between gap-3 rounded-2xl border p-4 text-left',
-                          'backdrop-blur-xl transition-all',
-                          affordable
-                            ? 'border-white/12 bg-white/[0.04] hover:bg-white/[0.06]'
-                            : 'border-white/[0.06] bg-white/[0.02] opacity-60 cursor-not-allowed',
-                        ].join(' ')}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="grid h-10 w-10 place-items-center rounded-xl bg-black/30 text-lg">
-                            {r.art}
-                          </div>
-                          <div>
-                            <div className="font-medium text-white">{r.title}</div>
-                            <div className="text-xs text-white/60">{r.blurb}</div>
-                          </div>
-                        </div>
-                        <div className="text-xs text-white/75">
-                          {r.cost.toLocaleString()} pts
-                        </div>
-                      </motion.button>
-                    );
-                  })}
-                </div>
-
-                <div className="mt-5 flex justify-end">
-                  <button
-                    onClick={() => setOpen(false)}
-                    className="rounded-xl border border-white/15 px-4 py-2 text-white/80 hover:bg-white/5"
-                  >
-                    Close
-                  </button>
-                </div>
-
-                {/* Selected reward claim panel */}
-                <AnimatePresence>
-                  {selected && (
-                    <motion.div
-                      initial={{ scale: 0.96, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.98, opacity: 0 }}
-                      className="pointer-events-auto absolute inset-x-6 bottom-6 z-[95] rounded-2xl border border-emerald-400/30 bg-emerald-500/10 p-4 backdrop-blur-xl"
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <div className="grid h-9 w-9 place-items-center rounded-lg bg-emerald-400/20 text-base">
-                            {selected.art}
-                          </div>
-                          <div>
-                            <div className="font-medium text-emerald-200">{selected.title}</div>
-                            <div className="text-xs text-emerald-200/80">
-                              Cost: {selected.cost.toLocaleString()} pts
-                            </div>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => {
-                            onRedeem?.(selected.id);
-                            // mini celebration pulse
-                            setSelected(null);
-                            setOpen(false);
-                          }}
-                          className="rounded-xl bg-gradient-to-r from-emerald-400 to-teal-400 px-4 py-2 text-black font-medium hover:brightness-110 transition"
-                        >
-                          Claim
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
       {/* Local keyframes for sparkles + shine */}

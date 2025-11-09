@@ -256,7 +256,7 @@ export default function PrismLanding() {
         <SmartChallengesPro challenges={CHALLENGES} />
 
         {/* REWARDS */}
-        <RewardsPro points={POINTS} onRedeem={(id) => console.log('Redeemed:', id)} />
+        <RewardsPro points={POINTS} onOpenRewards={() => setOpenRewards(true)} />
 
         {/* TRANSACTIONS */}
         <Section id="transactions" headline="Transaction History" subhead="Track every payment and purchase with detailed insights.">
@@ -270,10 +270,15 @@ export default function PrismLanding() {
           </div>
         </footer>
 
-        <RewardsModal open={openRewards} onClose={() => setOpenRewards(false)} points={POINTS} onRedeem={r => {
-        console.log('Redeem', r.id);
-        setOpenRewards(false);
-      }} />
+        <RewardsModal 
+          open={openRewards} 
+          onClose={() => setOpenRewards(false)} 
+          points={POINTS} 
+          onRedeem={r => {
+            console.log('Redeem', r.id);
+            setOpenRewards(false);
+          }} 
+        />
       </div>
     </SmoothScroll>;
 }
